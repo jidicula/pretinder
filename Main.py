@@ -49,9 +49,11 @@ def right(headers, id):
     assert r.status_code != '200', "GET failed, check auth_token"
     print("Swipe right")
     r_data = r.json()
-    print(r_data['match'])
+
     if r_data['match'] == 'true':
         print("It's a match!")
+    else:
+        print("match:", r_data['match'])
     return
 
 
