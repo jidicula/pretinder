@@ -1,0 +1,13 @@
+autopep8==1.4.4
+certifi==2019.6.16
+entrypoints==0.3
+flake8==3.7.8
+importmagic==0.1.7
+jedi==0.13.3
+mccabe==0.6.1
+parso==0.3.4
+pycodestyle==2.5.0
+pyflakes==2.1.1
+rope==0.14.0
+virtualenv==16.6.1
+yapf==0.27.0
