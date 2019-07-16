@@ -104,6 +104,7 @@ while deck:
         if random() > random_right:  # Proportion of random likes
             right(headers, id)
             k += 1
+            unblurred_img = unblur_image(headers)
             break
         for j in range(num_pics):
             time.sleep(random() * 2)  # random delay between pics
