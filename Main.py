@@ -101,6 +101,10 @@ while deck:
         num_pics = len(recs_json['results'][i]['photos'])
         print(num_pics, "pics in this profile")
         id = recs_json['results'][i]['_id']
+        if random() > random_right:  # Proportion of random likes
+            right(headers, id)
+            k += 1
+            break
         for j in range(num_pics):
             time.sleep(random() * 2)  # random delay between pics
             print("profile", i + 1, ': pic', j + 1)
@@ -118,10 +122,6 @@ while deck:
                 # plt.show()
                 right(headers, id)
                 unblurred_img = unblur_image(headers)
-                k += 1
-                break
-            if random() > random_right:  # Proportion of random likes
-                right(headers, id)
                 k += 1
                 break
             elif j == num_pics - 1:
