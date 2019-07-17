@@ -91,7 +91,7 @@ unblurred_img = unblur_image(headers)
 deck = True
 k = 0
 right_swipe_limit = randint(30, 40)  # Set random right swipe limit in range
-
+print("Set right swipe limit:", right_swipe_limit)
 while deck:
     recs_json = rec_deck(headers)
     print(len(recs_json['results']), "profiles in deck")
@@ -104,6 +104,7 @@ while deck:
         if random() > random_right:  # Proportion of random likes
             right(headers, id)
             k += 1
+            print(k, "of", right_swipe_limit, "right swipes so far")
             unblurred_img = unblur_image(headers)
             break
         for j in range(num_pics):
@@ -124,6 +125,7 @@ while deck:
                 right(headers, id)
                 unblurred_img = unblur_image(headers)
                 k += 1
+                print(k,  "of", right_swipe_limit, "right swipes so far")
                 break
             elif j == num_pics - 1:
                 left(headers, id)
