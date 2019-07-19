@@ -22,6 +22,7 @@ from random import random, randint
 
 
 def unblur_image(headers):
+    # get all blurred images! https://api.gotinder.com/v2/fast-match/teasers
     response = requests.request(
         "GET",
         'https://api.gotinder.com/v2/fast-match/preview',
@@ -90,7 +91,7 @@ unblurred_img = unblur_image(headers)
 
 deck = True
 k = 0
-right_swipe_limit = randint(30, 40)  # Set random right swipe limit in range
+right_swipe_limit = randint(20, 30)  # Set random right swipe limit in range
 print("Set right swipe limit:", right_swipe_limit)
 while deck:
     recs_json = rec_deck(headers)
