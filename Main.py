@@ -27,7 +27,8 @@ def unblur_image(headers):
         "GET",
         'https://api.gotinder.com/v2/fast-match/preview',
         headers=headers)
-    assert response.status_code != 200, "GET failed, check auth_token"
+    print(response.status_code)
+    assert response.status_code == 200, "GET failed, check auth_token"
     response.raise_for_status()
     with open('unblur.jpg', 'wb') as fd:
         for chunk in response.iter_content(chunk_size=1000):
@@ -39,7 +40,7 @@ def unblur_image(headers):
 def left(headers, id):
     url = str('https://api.gotinder.com/pass/' + id)
     r = requests.request("GET", url, headers=headers)
-    assert r.status_code != 200, "GET failed, check auth_token"
+    assert r.status_code == 200, "GET failed, check auth_token"
     print("Swipe left")
     return
 
@@ -47,7 +48,7 @@ def left(headers, id):
 def right(headers, id):
     url = str('https://api.gotinder.com/like/' + id)
     r = requests.request("GET", url, headers=headers)
-    assert r.status_code != 200, "GET failed, check auth_token"
+    assert r.status_code == 200, "GET failed, check auth_token"
     print("Swipe right")
     r_data = r.json()
 
