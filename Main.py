@@ -27,7 +27,6 @@ def unblur_image(headers):
         "GET",
         'https://api.gotinder.com/v2/fast-match/preview',
         headers=headers)
-    print(response.status_code)
     assert response.status_code == 200, "GET failed, check auth_token"
     response.raise_for_status()
     with open('unblur.jpg', 'wb') as fd:
