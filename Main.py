@@ -91,15 +91,35 @@ def rec_deck(headers):
     return recs_data
 
 
+def image_comparison(img1, img2):
+    # If images have same dimensions, no need for
+    # cross-correlation template matching
+    if img1.shape == img2.shape:
+        if np.array_equal(img1, img2):
+            return
+    # cross-correlation template matching
+    img1_h = img1.shape[0]  # height of img1
+    img1_w = img1.shape[1]  # height of img2
+    img2_h = img2.shape[0]
+    img2_w = img2.shape[1]
+    if img1_h > img2_h or img1_w > img2_w:
+        result = feature.match_template(img1, img2)
+    else:  # sometimes the img is bigger than the teaser
+        result = feature.match_template(img2, img1)
+    # match gives correlation coefficient 1 when rounded to 3rd decimal places
+    if np.round(result.max(), 3) == 1:
+        return
+
+
 # Getting auth token from CLI argument
 auth_token = str(sys.argv[1])
 print(auth_token)
 
 # Getting random right swipe proportion, defaulting to 0.2 if none given
 try:
-    random_right = 1 - float(sys.argv[2])
+    random_right_threshold = 1 - float(sys.argv[2])
 except Exception:
-    random_right = 0.8
+    random_right_threshold = 0.8
 
 # Setting headers for JSON requests
 headers = {
@@ -130,7 +150,7 @@ while deck:
         num_pics = len(recs_json['results'][i]['photos'])
         print(num_pics, "pics in this profile.")
         id = recs_json['results'][i]['_id']
-        if random() > random_right:  # Random right swipes
+        if random() > random_right_threshold:  # Random right swipes
             right(headers, id)
             right_count += 1
             print(right_count, "of", right_swipe_limit, "right swipes so far.")
@@ -145,27 +165,7 @@ while deck:
             img = sk.io.imread(img_url)
             for k in range(len(teasers)):  # iterate through each teaser
                 teaser = teasers[k]
-                # If image and teaser have same dimensions, no need for
-                # cross-correlation template matching
-                if img.shape == teaser.shape:
-                    if np.array_equal(img, teaser):
-                        right(headers, id)
-                        teasers = teaser_reveal(headers)
-                        right_count += 1
-                        print(right_count, "of", right_swipe_limit,
-                              "right swipes so far.")
-                        break
-                # cross-correlation template matching
-                img_h = img.shape[0]  # height of img
-                img_w = img.shape[1]  # width of img
-                teaser_h = teaser.shape[0]
-                teaser_w = teaser.shape[1]
-                if img_h > teaser_h or img_w > teaser_w:
-                    result = feature.match_template(img, teaser)
-                else:  # sometimes the img is bigger than the teaser
-                    result = feature.match_template(teaser, img)
-                # match gives a correlation coefficient of 1 when rounded
-                if np.round(result.max()) == 1:
+                if image_comparison(img, teaser):
                     right(headers, id)
                     teasers = teaser_reveal(headers)
                     right_count += 1
@@ -174,6 +174,7 @@ while deck:
                     break
             if j == num_pics - 1:
                 left(headers, id)
+        break
 
     if right_count == right_swipe_limit:
         print("Swipe limit", right_swipe_limit, "has been reached.")
