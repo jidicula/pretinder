@@ -14,6 +14,7 @@
 
 import requests
 import skimage as sk
+from skimage import feature
 import numpy as np
 import time
 import sys
@@ -22,7 +23,6 @@ from random import random, randint
 
 
 def unblur_image(headers):
-    # get all blurred images! https://api.gotinder.com/v2/fast-match/teasers
     response = requests.request(
         "GET",
         'https://api.gotinder.com/v2/fast-match/preview',
@@ -34,6 +34,31 @@ def unblur_image(headers):
             fd.write(chunk)
     img = sk.io.imread('unblur.jpg')
     return img
+
+
+def teaser_reveal(headers):
+    response = requests.request(
+        "GET",
+        'https://api.gotinder.com/v2/fast-match/teasers',
+        headers=headers)
+    assert response.status_code == 200, "GET failed, check auth token"
+    response.raise_for_status()
+    teasers_json = response.json()
+    teasers = []  # instantiate list of teaser images
+    # iterate through each profile
+    for i in range(len(teasers_json['data']['results'])):
+        # iterate through each pic in the profile
+        for j in range(
+                len(teasers_json['data']['results'][i]['user']['photos'])):
+            url = teasers_json['data']['results'][i]['user']['photos'][j][
+                'processedFiles'][-1]['url']
+            img = sk.io.imread(url)
+            # add pic to teaser list and write out to ./teasers directory
+            teasers.append(img)
+            sk.io.imsave(
+                "teasers/profile" + str(i + 1) + "pic" + str(j + 1) + ".tif",
+                img)
+    return (teasers)
 
 
 def left(headers, id):
@@ -89,48 +114,67 @@ headers = {
 # Fetch unblurred image at top of "Who liked you" stack
 unblurred_img = unblur_image(headers)
 
+# Fetch list of teaser images from the entire "Who liked you" stack
+teasers = teaser_reveal(headers)
+
 deck = True
-k = 0
+right_count = 0
 right_swipe_limit = randint(20, 30)  # Set random right swipe limit in range
 print("Set right swipe limit:", right_swipe_limit)
 while deck:
     recs_json = rec_deck(headers)
-    print(len(recs_json['results']), "profiles in deck")
+    print(len(recs_json['results']), "profiles in deck.")
 
     for i in range(len(recs_json['results'])):
         time.sleep(random() * 5)  # random delay between profiles
         num_pics = len(recs_json['results'][i]['photos'])
-        print(num_pics, "pics in this profile")
+        print(num_pics, "pics in this profile.")
         id = recs_json['results'][i]['_id']
-        if random() > random_right:  # Proportion of random likes
+        if random() > random_right:  # Random right swipes
             right(headers, id)
-            k += 1
-            print(k, "of", right_swipe_limit, "right swipes so far")
+            right_count += 1
+            print(right_count, "of", right_swipe_limit, "right swipes so far.")
             unblurred_img = unblur_image(headers)
             break
         for j in range(num_pics):
-            time.sleep(random() * 2)  # random delay between pics
+            time.sleep(random() * 2)  # random delay between fetching pics
             print("profile", i + 1, ': pic', j + 1)
             img_url = recs_json['results'][i]['photos'][j]['processedFiles'][
                 -1]['url']
             print(img_url)
             img = sk.io.imread(img_url)
-            if np.array_equal(img, unblurred_img):
-                # Uncomment below for img match debugging
-                # fig, (ax_img, ax_unblurred) = plt.subplots(ncols=2)
-                # ax_img.imshow(img)
-                # ax_img.set_title("Current pic")
-                # ax_unblurred.imshow(unblurred_img)
-                # ax_unblurred.set_title("Unblurred pic")
-                # plt.show()
-                right(headers, id)
-                unblurred_img = unblur_image(headers)
-                k += 1
-                print(k,  "of", right_swipe_limit, "right swipes so far")
-                break
-            elif j == num_pics - 1:
+            for k in range(len(teasers)):  # iterate through each teaser
+                teaser = teasers[k]
+                # If image and teaser have same dimensions, no need for
+                # cross-correlation template matching
+                if img.shape == teaser.shape:
+                    if np.array_equal(img, teaser):
+                        right(headers, id)
+                        teasers = teaser_reveal(headers)
+                        right_count += 1
+                        print(right_count, "of", right_swipe_limit,
+                              "right swipes so far.")
+                        break
+                # cross-correlation template matching
+                img_h = img.shape[0]  # height of img
+                img_w = img.shape[1]  # width of img
+                teaser_h = teaser.shape[0]
+                teaser_w = teaser.shape[1]
+                if img_h > teaser_h or img_w > teaser_w:
+                    result = feature.match_template(img, teaser)
+                else:  # sometimes the img is bigger than the teaser
+                    result = feature.match_template(teaser, img)
+                # match gives a correlation coefficient of 1 when rounded
+                if np.round(result.max()) == 1:
+                    right(headers, id)
+                    teasers = teaser_reveal(headers)
+                    right_count += 1
+                    print(right_count, "of", right_swipe_limit,
+                          "right swipes so far.")
+                    break
+            if j == num_pics - 1:
                 left(headers, id)
 
-    if k == right_swipe_limit:
+    if right_count == right_swipe_limit:
         print("Swipe limit", right_swipe_limit, "has been reached.")
         deck = False
