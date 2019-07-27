@@ -22,7 +22,7 @@ import numpy as np
 import requests
 
 import skimage as sk
-from skimage import feature
+import cv2
 
 
 # import matplotlib.pyplot as plt  # For img debugging purposes
@@ -109,9 +109,9 @@ def image_comparison(img1, img2):
     img2_h = img2.shape[0]
     img2_w = img2.shape[1]
     if img1_h > img2_h or img1_w > img2_w:
-        result = feature.match_template(img1, img2)
+        result = cv2.matchTemplate(img1, img2, cv2.TM_CCOEFF_NORMED)
     else:  # sometimes the img is bigger than the teaser
-        result = feature.match_template(img2, img1)
+        result = cv2.matchTemplate(img2, img1, cv2.TM_CCOEFF_NORMED)
     # match gives correlation coefficient 1 when rounded to 3rd decimal places
     if np.round(result.max(), 3) == 1:
         return
