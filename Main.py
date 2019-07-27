@@ -12,13 +12,19 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
+import os
+import shutil
+import sys
+import time
+from random import randint, random
+
+import numpy as np
 import requests
+
 import skimage as sk
 from skimage import feature
-import numpy as np
-import time
-import sys
-from random import random, randint
+
+
 # import matplotlib.pyplot as plt  # For img debugging purposes
 
 
@@ -110,6 +116,10 @@ def image_comparison(img1, img2):
     if np.round(result.max(), 3) == 1:
         return
 
+
+# Clean up old image and make new teasers directory
+shutil.rmtree("teasers")
+os.makedirs("teasers")
 
 # Getting auth token from CLI argument
 auth_token = str(sys.argv[1])
