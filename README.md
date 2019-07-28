@@ -8,7 +8,7 @@ This has been tested only in Python 3.7.3. It might work with previous or later 
 
 # What Tinderizer does
 
-Tinderizer finds the original profile pic at the top of your "Likes" deck that appears blurred to non-Premium users. It then cycles through your recommendations deck, comparing each picture to the picture from the profile that liked you. If there's an image match, Tinderizer swipes right. If none of the pictures in the profile matches, Tinderizer swipes left. Tinderizer also accepts an argument to set the proportion of random right swipes on profiles. Finally, a `right_swipe_limit` is randomly set ranging between 20 to 30 to prevent you from maxing out your right swipes.
+Tinderizer finds all the pics from the profiles in your "Likes" deck that appears blurred to non-Premium users. It then cycles through your recommendations deck, comparing each picture via the cross-correlation template match function from OpenCV to each "Who liked you" picture. If there's an image match, Tinderizer swipes right. If none of the pictures in the profile matches, Tinderizer swipes left. Tinderizer also accepts an argument to set the proportion of random right swipes on profiles. Finally, a `right_swipe_limit` is randomly set ranging between 20 to 30 to prevent you from maxing out your right swipes.
 
 # Installation
 
