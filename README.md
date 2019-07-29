@@ -25,13 +25,11 @@ Tinderizer finds all the pics from the profiles in your "Likes" deck that appear
 You might come across an error looking something like:
 
 ```Traceback (most recent call last):
-  File "Main.py", line 82, in <module>
+  File "Main.py", line 145, in <module>
     unblurred_img = unblur_image(headers)
-  File "Main.py", line 31, in unblur_image
-    response.raise_for_status()
-  File "/path/to/tinderizer/venv/lib/python3.7/site-packages/requests/models.py", line 940, in raise_for_status
-    raise HTTPError(http_error_msg, response=self)
-requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://api.gotinder.com/v2/fast-match/preview
+  File "Main.py", line 36, in unblur_image
+    assert response.status_code == 200, "GET failed, check auth_token"
+AssertionError: GET failed, check auth_token
 ```
 
 This means your X-Auth-Token has expired and you'll need to fetch a new one (see Step 5 of Installation above).
