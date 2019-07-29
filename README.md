@@ -17,7 +17,12 @@ Tinderizer finds all the pics from the profiles in your "Likes" deck that appear
 3. Create a virtual environment in the directory with `virtualenv name_of_your_venv`.
 3. Activate the virtualenv with `source name_of_your_venv/bin/activate`.
 4. Install dependencies with `pip install -r req.txt`.
-5. Find your Tinder X-Auth-Token using the instructions in Sanskar Jethi's [Medium post](https://medium.com/@sansyrox/hacking-tinders-premium-model-43f9f699d44).
+5. Find your Tinder X-Auth-Token using the instructions in Sanskar Jethi's [Medium post](https://medium.com/@sansyrox/hacking-tinders-premium-model-43f9f699d44). Generally, you'll have to:
+   1. Open Tinder in a browser.
+   2. Open the Web Console.
+   3. Swipe right on the first profile.
+   4. Check the Web Console for an XHR GET request to a URL beginning with `https://api.gotinder.com/like/` followed by a string of random characters.
+   5. Expand the request in the window and look for the request header titled "X-Auth-Token". Copy this to your clipboard.
 6. Run the software with `python Main.py "X-Auth-Token_here" "random_right"`, where `random_right` is the proportion of random right swipes you want. If no argument is given to `random_right`, it defaults to 0.2, or 20%.
 
 # Troubleshooting
