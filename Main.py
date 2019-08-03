@@ -118,8 +118,10 @@ def image_comparison(img1, img2):
 
 
 # Clean up old image and make new teasers directory
-shutil.rmtree("teasers")
-os.makedirs("teasers")
+try:
+    shutil.rmtree("teasers")
+except Exception:
+    os.makedirs("teasers")
 
 # Getting auth token from CLI argument
 auth_token = str(sys.argv[1])
