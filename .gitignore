@@ -104,6 +104,6 @@ venv.bak/
 .mypy_cache/
 .DS_Store
 *.jpg
-*.sh
+run.sh
 *~
 teasers/*.tif
