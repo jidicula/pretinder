@@ -121,7 +121,8 @@ def image_comparison(img1, img2):
 try:
     shutil.rmtree("teasers")
 except Exception:
-    os.makedirs("teasers")
+    pass
+os.makedirs("teasers")
 
 # Getting auth token from CLI argument
 auth_token = str(sys.argv[1])
